@@ -16,8 +16,8 @@ const theme = extendTheme({
   },
   colors: {
     custom: {
-      500: "#FCABFC",
-      border: "#312DFF",
+      500: "#BDE54C",
+      border: "#5A6E26",
     },
   },
 });
@@ -32,7 +32,7 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
     <ChakraProvider theme={theme}>
       <Button
         backgroundColor="custom.500"
-        color="#FFFFFF"
+        color="#333333"
         _hover={{ backgroundColor: "custom.500", opacity: 0.8 }}
         fontFamily="body"
         onClick={onClick}
@@ -52,7 +52,7 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
             color: "custom.border",
             zIndex: -1,
             textShadow:
-              "-1px -1px 0 #312DFF, 1px -1px 0 #312DFF, -1px 1px 0 #312DFF, 1px 1px 0 #312DFF",
+              "-1px -1px 0 #5A6E26, 1px -1px 0 #5A6E26, -1px 1px 0 #5A6E26, 1px 1px 0 #5A6E26",
           },
           "&::after": {
             content: '""',
@@ -62,7 +62,7 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
             width: "100%",
             height: "100%",
             background:
-              "linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)",
+              "linear-gradient(to right, transparent, rgba(90,110,38,0.2), transparent)",
             animation: `${shimmer} 4s infinite`,
           },
         }}

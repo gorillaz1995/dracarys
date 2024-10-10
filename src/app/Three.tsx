@@ -373,6 +373,7 @@ const Scene: React.FC = () => {
   }, []);
 
   const isSmallScreen = windowWidth < 600;
+  const isNarrowScreen = windowWidth < 700;
   const cameraPosition: [number, number, number] = isSmallScreen
     ? [0, 0, 3]
     : [0, 0, 2.5];
@@ -457,7 +458,7 @@ const Scene: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 0,
+          top: "10%", // Moved down 10%
           left: 0,
           width: "150%",
           height: "100%",
@@ -473,7 +474,79 @@ const Scene: React.FC = () => {
           style={{
             position: "absolute",
             width: "120%",
-            height: "clamp(2.4rem, 5vw, 6rem)",
+            height: "clamp(2.232rem, 4.65vw, 5.58rem)", // 7% smaller
+            background: "#FCABFC",
+            transform: "rotate(-15deg) translateY(-100%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1,
+            boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+          }}
+        >
+          <h3
+            style={{
+              color: "#312DFF",
+              fontSize: "clamp(1rem, 2vw, 1.5rem)",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+              padding: "0.5rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              display: "flex",
+              width: "100%",
+            }}
+          >
+            <div style={{ overflow: "hidden", width: "100%" }}>
+              <div style={{ display: "flex", width: "200%" }}>
+                <span
+                  className="font-oxygen"
+                  style={{
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    animation: "scrollTextReverse 70s linear infinite",
+                  }}
+                >
+                  Create Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries •&nbsp;
+                </span>
+                <span
+                  className="font-oxygen"
+                  style={{
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    animation: "scrollTextReverse 70s linear infinite",
+                  }}
+                >
+                  Create Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries • Create
+                  Without Boundaries • Create Without Boundaries •&nbsp;
+                </span>
+              </div>
+            </div>
+          </h3>
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            width: "120%",
+            height: "clamp(2.232rem, 4.65vw, 5.58rem)", // 7% smaller
             background: "#312DFF",
             transform: "rotate(-15deg)",
             display: "flex",
@@ -552,6 +625,14 @@ const Scene: React.FC = () => {
                   transform: translateX(-50%);
                 }
               }
+              @keyframes scrollTextReverse {
+                0% {
+                  transform: translateX(-50%);
+                }
+                100% {
+                  transform: translateX(0);
+                }
+              }
             `}</style>
           </h3>
         </div>
@@ -559,7 +640,7 @@ const Scene: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: isSmallScreen ? "20%" : "35%", // Adjusted from 5% and 20% to 20% and 35%
+          top: isNarrowScreen ? "25%" : "10%", // Adjusted for narrow screens
           left: 0,
           width: "100%",
           height: "100%",
@@ -647,7 +728,7 @@ const Scene: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: "15%",
+          bottom: "12%",
           left: 0,
           width: "100%",
           zIndex: 3,
