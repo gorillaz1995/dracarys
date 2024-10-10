@@ -67,15 +67,23 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
         scale: 1,
         duration: 0.5,
         ease: "back.out(1.7)",
-      }).to(buttonRef.current, {
-        x: "random(-5, 5)",
-        y: "random(-5, 5)",
-        rotation: "random(-5, 5)",
-        duration: 0.05,
-        repeat: 15,
-        yoyo: true,
-        ease: "none",
-      });
+      })
+        .to(buttonRef.current, {
+          x: "random(-5, 5)",
+          y: "random(-5, 5)",
+          rotation: "random(-5, 5)",
+          duration: 0.05,
+          repeat: 15,
+          yoyo: true,
+          ease: "none",
+        })
+        .to(buttonRef.current, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
     }
   }, []);
 

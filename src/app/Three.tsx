@@ -737,7 +737,9 @@ const Scene: React.FC = () => {
           pointerEvents: "auto",
         }}
       >
-        <ButtonH>Explore</ButtonH>
+        <ButtonH onClick={() => (window.location.href = "/services")}>
+          Explore
+        </ButtonH>
       </div>
     </div>
   );
