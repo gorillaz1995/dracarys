@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
   Canvas,
@@ -10,19 +12,20 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 import { Tween, Easing, update as tweenUpdate } from "@tweenjs/tween.js";
 import { gsap } from "gsap";
+import ButtonH from "./components/ButtonH";
 
 class CustomCube extends THREE.Group {
   subdivisions: number;
   outerCube: THREE.Mesh;
   innerCubesGroup: THREE.Group;
-  liquidMaterial: THREE.ShaderMaterial;
+  diamondMaterial: THREE.ShaderMaterial;
 
   constructor(subdivisions = 3) {
     super();
     this.subdivisions = subdivisions;
     this.outerCube = new THREE.Mesh();
     this.innerCubesGroup = new THREE.Group();
-    this.liquidMaterial = new THREE.ShaderMaterial(); // Initialize here
+    this.diamondMaterial = new THREE.ShaderMaterial(); // Initialize here
     this.add(this.innerCubesGroup);
     this.createOuterCube();
     this.createInnerCubes();
@@ -31,13 +34,18 @@ class CustomCube extends THREE.Group {
   createOuterCube() {
     const geometry = new THREE.BoxGeometry(1, 1, 1, 32, 32, 32);
 
-    this.liquidMaterial = new THREE.ShaderMaterial({
+    this.diamondMaterial = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        baseColor: { value: new THREE.Color(0x32cd32) }, // Limegreen color
-        accentColor: { value: new THREE.Color(0x00ff00) }, // Brighter green for contrast
-        noiseScale: { value: 3.4 },
-        noiseIntensity: { value: 0.09 },
+        color: { value: new THREE.Color("#FCABFC") },
+        noiseScale: { value: 3.0 },
+        shininess: { value: 150 },
+        noiseIntensity: { value: 0.08 },
+        spotlightPosition: { value: new THREE.Vector3(5, 5, 5) },
+        fogColor: { value: new THREE.Color("#4A47FF") }, // Brighter blue for more visibility
+        fogNear: { value: 1.5 }, // Start fog closer to the camera
+        fogFar: { value: 5 }, // Extend fog further away
+        fogDensity: { value: 0.15 }, // Reduce fog density for better cube visibility
       },
       vertexShader: `
         uniform float time;
@@ -45,6 +53,7 @@ class CustomCube extends THREE.Group {
         uniform float noiseIntensity;
         varying vec3 vNormal;
         varying vec3 vPosition;
+        varying float vFogDepth;
         
         // Simplex 3D noise function
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -101,42 +110,57 @@ class CustomCube extends THREE.Group {
           vNormal = normal;
           vPosition = position;
           
-          // Add organic, flowing movement
-          float noise = snoise(vec3(position * noiseScale + time * 0.3));
+          // Add subtle, liquid-like movement
+          float noise = snoise(vec3(position * noiseScale + time * 0.2));
           vec3 newPosition = position + normal * noise * noiseIntensity;
           
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+          vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          
+          // Calculate fog depth
+          vFogDepth = -mvPosition.z;
         }
       `,
       fragmentShader: `
-        uniform vec3 baseColor;
-        uniform vec3 accentColor;
+        uniform vec3 color;
         uniform float time;
+        uniform vec3 spotlightPosition;
+        uniform vec3 fogColor;
+        uniform float fogNear;
+        uniform float fogFar;
         varying vec3 vNormal;
         varying vec3 vPosition;
+        varying float vFogDepth;
         
         void main() {
-          // Dynamic lighting
-          vec3 lightDir = normalize(vec3(sin(time * 0.5), cos(time * 0.5), 0.5));
+          // Dynamic lighting for liquid effect
+          vec3 lightDir = normalize(spotlightPosition - vPosition);
           float diffuse = max(dot(vNormal, lightDir), 0.0);
           
-          // Enhanced Fresnel effect
-          float fresnel = pow(1.0 - max(dot(normalize(vNormal), normalize(-vPosition)), 0.0), 4.0);
+          // Enhanced Fresnel effect for liquid edges
+          float fresnel = pow(1.0 - max(dot(normalize(vNormal), normalize(-vPosition)), 0.0), 5.0);
           
-          // Color blending
-          vec3 finalColor = mix(baseColor, accentColor, fresnel * 0.7);
-          finalColor = mix(finalColor, vec3(1.0), fresnel * 0.3); // Add highlights
+          vec3 finalColor = mix(color, vec3(1.0), fresnel * 0.5);
           
-          // Apply lighting
-          finalColor *= (diffuse * 0.7 + 0.3);
+          // Apply lighting and add subtle shimmer
+          float shimmer = sin(time * 10.0 + vPosition.x * 20.0 + vPosition.y * 20.0 + vPosition.z * 20.0) * 0.1 + 0.9;
+          finalColor *= (diffuse * 0.5 + 0.5) * shimmer;
           
-          gl_FragColor = vec4(finalColor, 1.0);
+          // Add a bright highlight for the spotlight effect
+          float spotlight = pow(max(dot(reflect(-lightDir, vNormal), normalize(-vPosition)), 0.0), 32.0);
+          finalColor += vec3(1.0, 1.0, 0.9) * spotlight;
+          
+          // Apply fog
+          float fogFactor = smoothstep(fogNear, fogFar, vFogDepth);
+          finalColor = mix(finalColor, fogColor, fogFactor);
+          
+          gl_FragColor = vec4(finalColor, 0.90 * (1.0 - fogFactor)); // Adjust transparency based on fog
         }
       `,
-      transparent: false,
+      transparent: true,
     });
 
-    this.outerCube = new THREE.Mesh(geometry, this.liquidMaterial);
+    this.outerCube = new THREE.Mesh(geometry, this.diamondMaterial);
     this.add(this.outerCube);
   }
 
@@ -149,8 +173,10 @@ class CustomCube extends THREE.Group {
       segmentSize
     );
     const material = new THREE.MeshPhongMaterial({
-      color: "limegreen",
+      color: "#FCABFC",
       shininess: 150,
+      transparent: true,
+      opacity: 1,
     });
 
     for (let i = 0; i < 30; i++) {
@@ -193,15 +219,15 @@ class CustomCube extends THREE.Group {
       }
     });
 
-    // Update the time uniform for the liquid effect
-    if (this.liquidMaterial.uniforms) {
-      this.liquidMaterial.uniforms.time.value += delta;
+    // Update the time uniform for the diamond effect
+    if (this.diamondMaterial.uniforms) {
+      this.diamondMaterial.uniforms.time.value += delta;
     }
   }
 
   dispose() {
     this.outerCube.geometry.dispose();
-    this.liquidMaterial.dispose();
+    this.diamondMaterial.dispose();
 
     this.innerCubesGroup.children.forEach((cube) => {
       if (cube instanceof THREE.Mesh) {
@@ -276,9 +302,9 @@ const Cube: React.FC<{ scale: number }> = ({ scale }) => {
       groupRef.current.rotation.y += delta * 0.25;
       groupRef.current.update(delta);
 
-      // Update the time uniform for the pulsating effect
-      if (groupRef.current.liquidMaterial.uniforms) {
-        groupRef.current.liquidMaterial.uniforms.time.value += delta;
+      // Update the time uniform for the diamond effect
+      if (groupRef.current.diamondMaterial.uniforms) {
+        groupRef.current.diamondMaterial.uniforms.time.value += delta;
       }
     }
     tweenUpdate();
@@ -403,7 +429,7 @@ const Scene: React.FC = () => {
     tl.to(
       "#agency-slogan strong",
       {
-        color: "#00FF00",
+        color: "#bde54c",
       },
       "-=0.5"
     );
@@ -416,9 +442,10 @@ const Scene: React.FC = () => {
         height: "100vh",
         background: "#000000",
         position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Canvas style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}>
+      <Canvas style={{ position: "absolute", top: 0, left: 0, zIndex: 2 }}>
         <ResizeHandler />
         <PerspectiveCamera makeDefault position={cameraPosition} fov={50} />
         <ambientLight intensity={0.9} />
@@ -430,75 +457,206 @@ const Scene: React.FC = () => {
       <div
         style={{
           position: "absolute",
+          top: 0,
+          left: 0,
+          width: "150%",
+          height: "100%",
+          zIndex: 1,
+          pointerEvents: "none",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            width: "120%",
+            height: "clamp(2.4rem, 5vw, 6rem)",
+            background: "#312DFF",
+            transform: "rotate(-15deg)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1,
+            boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+          }}
+        >
+          <h3
+            style={{
+              color: "#FCABFC",
+              fontSize: "clamp(1rem, 2vw, 1.5rem)",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
+              padding: "0.5rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              display: "flex",
+              width: "100%",
+            }}
+          >
+            <div style={{ overflow: "hidden", width: "100%" }}>
+              <div style={{ display: "flex", width: "200%" }}>
+                <span
+                  className="font-oxygen"
+                  style={{
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    animation: "scrollText 70s linear infinite",
+                  }}
+                >
+                  Be Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold • Be Bold, Break the Mold • Be
+                  Bold, Break the Mold • Be Bold, Break the Mold Be Bold, Break
+                  the Mold • Be Bold, Break the Mold • Be Bold, Break the Mold •
+                  Be Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold Be Bold, Break the Mold • Be
+                  Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold • Be Bold, Break the Mold • Be
+                  Bold, Break the Mold •&nbsp;
+                </span>
+                <span
+                  className="font-oxygen"
+                  style={{
+                    display: "inline-block",
+                    whiteSpace: "nowrap",
+                    animation: "scrollText 70s linear infinite",
+                  }}
+                >
+                  Be Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold • Be Bold, Break the Mold • Be
+                  Bold, Break the Mold • Be Bold, Break the Mold Be Bold, Break
+                  the Mold • Be Bold, Break the Mold • Be Bold, Break the Mold •
+                  Be Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold Be Bold, Break the Mold • Be
+                  Bold, Break the Mold • Be Bold, Break the Mold • Be Bold,
+                  Break the Mold • Be Bold, Break the Mold • Be Bold, Break the
+                  Mold • Be Bold, Break the Mold • Be Bold, Break the Mold • Be
+                  Bold, Break the Mold •&nbsp;
+                </span>
+              </div>
+            </div>
+            <style jsx>{`
+              @keyframes scrollText {
+                0% {
+                  transform: translateX(0);
+                }
+                100% {
+                  transform: translateX(-50%);
+                }
+              }
+            `}</style>
+          </h3>
+        </div>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: isSmallScreen ? "20%" : "35%", // Adjusted from 5% and 20% to 20% and 35%
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 3,
+          pointerEvents: "none",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          padding: "2rem",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            zIndex: 3,
+            textAlign: "center",
+          }}
+        >
+          <h2
+            id="agency-name"
+            className="text-3xl lg:text-7xl mb-2 font-rufina font-extrabold"
+            style={{
+              opacity: 0,
+              color: "white",
+              WebkitTextStroke: "0.5px #808080",
+              textShadow: "0 0 1px #808080, 0 0 2px #808080",
+            }}
+          >
+            Dark Creative Agency
+          </h2>
+          <p
+            id="agency-slogan"
+            className="text-xl lg:text-4xl pt-2 whitespace-nowrap font-oxygen"
+            style={{ opacity: 1, overflow: "hidden" }}
+          >
+            <span
+              id="redefine"
+              style={{
+                display: "inline-block",
+                transform: "translateX(-100%)",
+              }}
+            >
+              <strong style={{ color: "#BDE54C" }}>Redefine</strong>
+              <span
+                style={{
+                  color: "#FFFFFF",
+                  opacity: 0.88,
+                  textShadow:
+                    "-1px -1px 0 #5A6E26, 1px -1px 0 #5A6E26, -1px 1px 0 #5A6E26, 1px 1px 0 #5A6E26",
+                }}
+              >
+                {" "}
+                the future.
+              </span>
+            </span>{" "}
+            <span
+              id="break-out"
+              style={{ display: "inline-block", transform: "translateX(100%)" }}
+            >
+              <span
+                style={{
+                  color: "#FFFFFF",
+                  opacity: 0.88,
+                  textShadow: "0 0 1px #808080",
+                }}
+              >
+                Break out of the{" "}
+              </span>
+              <strong
+                style={{
+                  color: "#BDE54C",
+                  textShadow: "0 0 1px #808080",
+                  borderBottom: "2px solid #FCABFC",
+                  display: "inline-block",
+                  paddingBottom: "2px",
+                }}
+              >
+                <b>BOX</b>
+              </strong>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        style={{
+          position: "absolute",
           bottom: "15%",
           left: 0,
           width: "100%",
-          zIndex: 2,
-          pointerEvents: "none",
-          textAlign: "center",
-          color: "white",
+          zIndex: 3,
+          display: "flex",
+          justifyContent: "center",
+          pointerEvents: "auto",
         }}
       >
-        <h2
-          id="agency-name"
-          className="text-3xl lg:text-7xl mb-2"
-          style={{
-            opacity: 0,
-            color: "white",
-            WebkitTextStroke: "0.5px #808080",
-            textShadow: "0 0 1px #808080, 0 0 2px #808080",
-          }}
-        >
-          Dark Advertising Agency
-        </h2>
-        <p
-          id="agency-slogan"
-          className="text-xl lg:text-4xl pt-2"
-          style={{ opacity: 1, overflow: "hidden" }}
-        >
-          <span
-            id="redefine"
-            style={{ display: "inline-block", transform: "translateX(-100%)" }}
-          >
-            <strong style={{ color: "#32CD32" }}>Redefine</strong>
-            <span
-              style={{
-                color: "#FFFFFF",
-                opacity: 0.88,
-                textShadow:
-                  "-1px -1px 0 #808080, 1px -1px 0 #808080, -1px 1px 0 #808080, 1px 1px 0 #808080",
-              }}
-            >
-              {" "}
-              the future.{" "}
-            </span>
-          </span>
-          <span
-            id="break-out"
-            style={{ display: "inline-block", transform: "translateX(100%)" }}
-          >
-            <span
-              style={{
-                color: "#FFFFFF",
-                opacity: 0.88,
-                textShadow: "0 0 1px #808080",
-              }}
-            >
-              Break out of the{" "}
-            </span>
-            <strong style={{ color: "#00FF00", textShadow: "0 0 1px #808080" }}>
-              <b>BOX</b>
-            </strong>
-            <span
-              style={{
-                opacity: 0.88,
-                textShadow: "0 0 1px #808080",
-              }}
-            >
-              .
-            </span>
-          </span>
-        </p>
+        <ButtonH>Explore</ButtonH>
       </div>
     </div>
   );

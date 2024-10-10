@@ -12,6 +12,10 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        rufina: ["var(--font-rufina)"],
+        oxygen: ["var(--font-oxygen)"],
+      },
     },
   },
   plugins: [],

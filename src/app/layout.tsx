@@ -1,5 +1,20 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Rufina, Oxygen } from "next/font/google";
+
+const rufina = Rufina({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-rufina",
+});
+
+const oxygen = Oxygen({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  display: "swap",
+  variable: "--font-oxygen",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body
+        className={`antialiased ${rufina.variable} ${oxygen.variable} font-sans`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
