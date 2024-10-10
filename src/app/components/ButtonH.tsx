@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Button, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
+import { gsap } from "gsap";
 
 const shimmer = keyframes`
   0% { left: -100%; }
@@ -17,7 +18,8 @@ const theme = extendTheme({
   colors: {
     custom: {
       500: "#BDE54C",
-      border: "#5A6E26",
+      border: "#000000",
+      glow: "#FCABFC",
     },
   },
 });
@@ -28,12 +30,62 @@ interface ButtonHProps {
 }
 
 const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      gsap.set(buttonRef.current, { scale: 0, opacity: 0 });
+
+      const tl = gsap.timeline({ delay: 2 });
+
+      const growAndTremble = (scale: number) => {
+        tl.to(buttonRef.current, {
+          scale: scale,
+          opacity: 1,
+          duration: 0.5,
+          ease: "back.out(1.7)",
+        }).to(
+          buttonRef.current,
+          {
+            x: "random(-3, 3)",
+            y: "random(-3, 3)",
+            rotation: "random(-3, 3)",
+            duration: 0.05,
+            repeat: 4,
+            yoyo: true,
+            ease: "none",
+          },
+          "+=0.2"
+        );
+      };
+
+      growAndTremble(0.3);
+      growAndTremble(0.6);
+      growAndTremble(0.9);
+
+      tl.to(buttonRef.current, {
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      }).to(buttonRef.current, {
+        x: "random(-5, 5)",
+        y: "random(-5, 5)",
+        rotation: "random(-5, 5)",
+        duration: 0.05,
+        repeat: 15,
+        yoyo: true,
+        ease: "none",
+      });
+    }
+  }, []);
+
   return (
     <ChakraProvider theme={theme}>
       <Button
-        backgroundColor="custom.500"
-        color="#333333"
-        _hover={{ backgroundColor: "custom.500", opacity: 0.8 }}
+        ref={buttonRef}
+        bg="custom.500"
+        color="#000000"
+        _hover={{ bg: "custom.500", opacity: 0.8 }}
         fontFamily="body"
         onClick={onClick}
         border="2px solid"
@@ -52,7 +104,7 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
             color: "custom.border",
             zIndex: -1,
             textShadow:
-              "-1px -1px 0 #5A6E26, 1px -1px 0 #5A6E26, -1px 1px 0 #5A6E26, 1px 1px 0 #5A6E26",
+              "-1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000",
           },
           "&::after": {
             content: '""',
@@ -62,13 +114,33 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
             width: "100%",
             height: "100%",
             background:
-              "linear-gradient(to right, transparent, rgba(90,110,38,0.2), transparent)",
-            animation: `${shimmer} 4s infinite`,
+              "linear-gradient(to right, transparent, rgba(252,171,252,0.4), transparent)",
+            animation: `${shimmer} 2.4s infinite`, // 40% faster
+          },
+          "& > span": {
+            display: "inline-block",
+            position: "relative",
+            "&::before": {
+              content: "attr(data-text)",
+              position: "absolute",
+              left: 0,
+              top: 0,
+              color: "#000000",
+              zIndex: 1,
+              textShadow:
+                "-1px -1px 0 #BDE54C, 1px -1px 0 #BDE54C, -1px 1px 0 #BDE54C, 1px 1px 0 #BDE54C",
+            },
           },
         }}
         data-text={children}
       >
-        {children}
+        {React.Children.map(children, (child) =>
+          typeof child === "string" ? (
+            <span data-text={child}>{child}</span>
+          ) : (
+            child
+          )
+        )}
       </Button>
     </ChakraProvider>
   );

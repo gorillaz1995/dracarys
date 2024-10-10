@@ -670,7 +670,7 @@ const Scene: React.FC = () => {
               textShadow: "0 0 1px #808080, 0 0 2px #808080",
             }}
           >
-            Dark Creative Agency
+            Dark Creative Solutions
           </h2>
           <p
             id="agency-slogan"
