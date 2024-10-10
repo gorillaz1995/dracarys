@@ -111,8 +111,6 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
             transform: "translate(-50%, -50%)",
             color: "custom.border",
             zIndex: -1,
-            textShadow:
-              "-1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000",
           },
           "&::after": {
             content: '""',
@@ -135,8 +133,6 @@ const ButtonH: React.FC<ButtonHProps> = ({ children, onClick }) => {
               top: 0,
               color: "#000000",
               zIndex: 1,
-              textShadow:
-                "-1px -1px 0 #BDE54C, 1px -1px 0 #BDE54C, -1px 1px 0 #BDE54C, 1px 1px 0 #BDE54C",
             },
           },
         }}
