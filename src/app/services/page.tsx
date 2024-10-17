@@ -35,6 +35,7 @@ const ServicesPage = () => {
 
     let startY = 0;
     let isDragging = false;
+    const swipeSensitivity = 1.77; // Adjust this value to make the swipe more sensitive
 
     Observer.create({
       target: container,
@@ -48,10 +49,11 @@ const ServicesPage = () => {
         if (!isDragging) return;
         const deltaY = (self.y || 0) - startY;
         const currentX = gsap.getProperty(content, "x") as number;
+        const swipeSensitivity = 2.8; // Adjusted sensitivity: 20% slower than previous 3.5
         const newX = gsap.utils.clamp(
           -(content.offsetWidth - container.offsetWidth),
           0,
-          currentX + deltaY
+          currentX + deltaY * swipeSensitivity // Apply adjusted sensitivity to the swipe
         );
         gsap.set(content, { x: newX });
         startY = self.y || 0;
@@ -65,8 +67,8 @@ const ServicesPage = () => {
           Math.round(progress * (sections.length - 1)) / (sections.length - 1);
         gsap.to(content, {
           x: -snapTo * (content.offsetWidth - container.offsetWidth),
-          ease: "power2.out",
-          duration: 0.5,
+          ease: "power2.out", // Easing for smoother snapping
+          duration: 1.05, // Slightly faster snap
         });
       },
       lockAxis: true,
