@@ -35,7 +35,6 @@ const ServicesPage = () => {
 
     let startY = 0;
     let isDragging = false;
-    const swipeSensitivity = 1.77; // Adjust this value to make the swipe more sensitive
 
     Observer.create({
       target: container,
