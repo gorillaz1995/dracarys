@@ -1,10 +1,25 @@
-import React from "react";
+"use client";
 
-export default function AboutUs() {
+import React from "react";
+import SvgMorph from "../components/SvgMorph";
+
+export default function AboutUsPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-4">About Us</h1>
-      <p className="text-lg">Hello, World! Welcome to our About Us page.</p>
+    <div className="min-h-screen w-full bg-black">
+      <SvgMorph />
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-rufina font-bold text-white mb-8">
+          About Us
+        </h1>
+        <p className="text-lg md:text-xl font-oxygen text-white mb-6">
+          We are a passionate team dedicated to delivering innovative solutions
+          and exceptional experiences.
+        </p>
+        <p className="text-lg md:text-xl font-oxygen text-white">
+          Our mission is to empower businesses and individuals through
+          cutting-edge technology and creative design.
+        </p>
+      </div>
     </div>
   );
 }

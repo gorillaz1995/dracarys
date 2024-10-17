@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-rufina: var(--font-rufina);
+  --font-oxygen: var(--font-oxygen);
+}
+
+.font-rufina {
+  font-family: var(--font-rufina);
+}
+
+.font-oxygen {
+  font-family: var(--font-oxygen);
+}

@@ -482,6 +482,7 @@ const Scene: React.FC = () => {
             alignItems: "center",
             zIndex: 1,
             boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+            overflow: "hidden",
           }}
         >
           <h3
@@ -496,6 +497,8 @@ const Scene: React.FC = () => {
               overflow: "hidden",
               display: "flex",
               width: "100%",
+              position: "relative",
+              zIndex: 1,
             }}
           >
             <div style={{ overflow: "hidden", width: "100%" }}>
@@ -554,6 +557,7 @@ const Scene: React.FC = () => {
             alignItems: "center",
             zIndex: 1,
             boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+            overflow: "hidden",
           }}
         >
           <h3
@@ -568,6 +572,8 @@ const Scene: React.FC = () => {
               overflow: "hidden",
               display: "flex",
               width: "100%",
+              position: "relative",
+              zIndex: 1,
             }}
           >
             <div style={{ overflow: "hidden", width: "100%" }}>
@@ -632,6 +638,33 @@ const Scene: React.FC = () => {
                 100% {
                   transform: translateX(0);
                 }
+              }
+              @keyframes shimmer {
+                0% {
+                  left: -100%;
+                }
+                100% {
+                  left: 100%;
+                }
+              }
+              .banner-top::after,
+              .banner-bottom::after {
+                content: "";
+                position: absolute;
+                top: 15%;
+                left: -100%;
+                width: 100%;
+                height: 70%;
+                background: linear-gradient(
+                  to right,
+                  transparent,
+                  rgba(252, 171, 252, 0.4),
+                  transparent
+                );
+                animation: shimmer 1.5s infinite;
+              }
+              .banner-top::after {
+                animation-direction: reverse;
               }
             `}</style>
           </h3>

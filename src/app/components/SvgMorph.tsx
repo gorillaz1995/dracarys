@@ -119,7 +119,7 @@ const SvgMorph: React.FC = () => {
           textAlign: "center",
         }}
       >
-        SERVICES
+        ABOUT US
       </p>
     </div>
   );
