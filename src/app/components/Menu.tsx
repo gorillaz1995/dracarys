@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import {
   Menu,
   MenuButton,
@@ -76,27 +76,36 @@ const Menux: React.FC = () => {
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    gsap.set(overlayRef.current, { xPercent: -100 });
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      if (overlayRef.current) {
+        gsap.set(overlayRef.current, { xPercent: -100 });
+      }
+    });
+
+    return () => ctx.revert();
   }, []);
 
   const handleNavigation = (path: string) => {
     if (overlayRef.current) {
-      gsap.to(overlayRef.current, {
-        xPercent: 0,
-        duration: 0.25,
-        ease: "power2.inOut",
-        onComplete: () => {
-          router.push(path);
-          setTimeout(() => {
+      const ctx = gsap.context(() => {
+        gsap.to(overlayRef.current, {
+          xPercent: 0,
+          duration: 0.25,
+          ease: "power2.inOut",
+          onComplete: () => {
+            router.push(path);
             gsap.to(overlayRef.current, {
               xPercent: 100,
               duration: 0.25,
               ease: "power2.inOut",
+              delay: 0.1,
             });
-          }, 250); // Wait for 250ms (0.25s) before starting to hide the overlay
-        },
+          },
+        });
       });
+
+      return () => ctx.revert();
     } else {
       router.push(path);
     }

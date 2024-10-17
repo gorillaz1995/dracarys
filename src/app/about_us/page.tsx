@@ -1,12 +1,10 @@
 "use client";
 
 import React from "react";
-import SvgMorph from "../components/SvgMorph";
 
 export default function AboutUsPage() {
   return (
     <div className="min-h-screen w-full bg-black">
-      <SvgMorph />
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-rufina font-bold text-white mb-8">
           About Us

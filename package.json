@@ -20,9 +20,9 @@
     "@react-three/fiber": "^8.17.9",
     "@types/three": "^0.169.0",
     "framer-motion": "^11.11.7",
-    "next": "14.2.14",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "three": "^0.169.0",
     "vivus": "^0.4.6"
   },

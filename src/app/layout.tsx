@@ -2,7 +2,9 @@
 
 import "./globals.css";
 import { Rufina, Oxygen } from "next/font/google";
-import Menux from "./components/Menu";
+import dynamic from "next/dynamic";
+
+const DynamicMenux = dynamic(() => import("./components/Menu"), { ssr: false });
 
 const rufina = Rufina({
   weight: ["400", "700"],
@@ -28,7 +30,7 @@ export default function RootLayout({
       <body
         className={`antialiased ${rufina.variable} ${oxygen.variable} font-sans relative`}
       >
-        <Menux />
+        <DynamicMenux />
         <main>{children}</main>
       </body>
     </html>
