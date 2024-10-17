@@ -12,6 +12,7 @@ import {
   ChakraProvider,
   extendTheme,
 } from "@chakra-ui/react";
+import Image from "next/image";
 
 const theme = extendTheme({
   colors: {
@@ -26,120 +27,121 @@ const theme = extendTheme({
 interface PictProps {
   title: string;
   subtitle?: string;
+  heading: string;
   description: string;
+  imageSrc: string;
 }
 
-const Pict: React.FC<PictProps> = ({ title, subtitle, description }) => {
+const Pict: React.FC<PictProps> = ({
+  title,
+  subtitle,
+  heading,
+  description,
+  imageSrc,
+}) => {
   return (
     <ChakraProvider theme={theme}>
-      <Box
-        className="min-h-[90vh] md:min-h-screen flex flex-col lg:flex-row"
-        bg="#000000"
-      >
-        <Box className="flex-[0.6] lg:flex-1 flex justify-center items-center p-4 lg:p-6">
+      <Box className="w-full h-full flex flex-col lg:flex-row" bg="#000000">
+        <Box className="flex-1 flex justify-center items-center p-2 lg:p-4 lg:mr-16">
           <Card
-            maxW={{ base: "sm", lg: "xl" }}
             w="100%"
-            h={{ base: "100%", lg: "xl" }}
-            bgGradient="linear(to-br, brand.100, brand.200, brand.300)"
+            h="100%"
+            maxH={{ base: "50vh", lg: "70vh" }}
             borderRadius="0"
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-between"
-            alignItems="center"
-            p={{ base: 4, lg: 6 }}
+            overflow="hidden"
             position="relative"
-            style={{
-              transform: "perspective(1000px) rotateY(-15deg) rotateX(5deg)",
-              transition: "transform 0.3s ease-in-out",
-              boxShadow:
-                "8px 8px 14px rgba(189, 229, 76, 0.3), -8px -8px 14px rgba(189, 229, 76, 0.3)",
-            }}
-            _hover={{
-              transform: "perspective(1000px) rotateY(-5deg) rotateX(2deg)",
-            }}
-            _after={{
-              content: '""',
-              position: "absolute",
-              top: "3px",
-              right: "-3px",
-              bottom: "-3px",
-              left: "3px",
-              background: "rgba(189, 229, 76, 0.1)",
-              filter: "blur(7px)",
-              zIndex: -1,
-            }}
           >
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              style={{ objectFit: "cover", objectPosition: "center" }}
+              priority={imageSrc === "/images/c1.webp"}
+            />
             <CardBody
               display="flex"
               flexDirection="column"
               justifyContent="center"
               alignItems="center"
-              flex="1"
+              zIndex={1}
+              bg="rgba(0, 0, 0, 0.6)"
+              h="100%"
+              transform="skew(-5deg)"
+              border="2px solid #FCABFC"
+              boxShadow="0 0 10px 2px rgba(252, 171, 252, 0.3)"
+              style={{
+                animation: "levitate 3s ease-in-out infinite",
+              }}
             >
-              <Stack
-                textAlign="center"
-                color="black"
-                spacing={{ base: 3, lg: 4 }}
-              >
+              <Stack spacing={2} textAlign="center" color="white">
                 <Heading
-                  size={{ base: "md", lg: "xl" }}
-                  className="font-stint-ultra-expanded"
+                  size={{ base: "lg", lg: "2xl" }}
+                  className="font-rufina"
                 >
                   {title}
                 </Heading>
                 {subtitle && (
                   <Heading
-                    size={{ base: "sm", lg: "lg" }}
-                    className="font-stint-ultra-expanded"
+                    size={{ base: "md", lg: "xl" }}
+                    className="font-rufina"
                   >
                     {subtitle}
                   </Heading>
                 )}
               </Stack>
+              <Button
+                colorScheme="brand"
+                className="font-oxygen mt-4 relative overflow-hidden"
+                borderRadius="0"
+                size={{ base: "sm", lg: "lg" }}
+                transform="skew(5deg)"
+                _hover={{
+                  transform: "skew(5deg) translateY(-2px)",
+                  boxShadow: "lg",
+                }}
+                sx={{
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: "-100%",
+                    width: "100%",
+                    height: "100%",
+                    background:
+                      "linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent)",
+                    animation: "shimmer 3s infinite",
+                  },
+                  "@keyframes shimmer": {
+                    "0%": { left: "-100%" },
+                    "100%": { left: "100%" },
+                  },
+                  "@keyframes levitate": {
+                    "0%, 100%": { transform: "skew(-5deg) translateY(0)" },
+                    "50%": { transform: "skew(-5deg) translateY(-10px)" },
+                  },
+                }}
+              >
+                Details
+              </Button>
             </CardBody>
-            <Button
-              bg="#BDE54C"
-              color="black"
-              _hover={{ bg: "#BDE54C", opacity: 0.8 }}
-              className="font-stint-ultra-expanded mt-4 lg:mt-6 relative overflow-hidden"
-              borderRadius="0"
-              fontSize={{ base: "sm", lg: "lg" }}
-              px={{ base: 3, lg: 6 }}
-              py={{ base: 1, lg: 3 }}
-              sx={{
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background:
-                    "linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent)",
-                  animation: "shimmer 3s infinite",
-                },
-                "@keyframes shimmer": {
-                  "0%": { left: "-100%" },
-                  "100%": { left: "100%" },
-                },
-              }}
-            >
-              Detalii serviciu
-            </Button>
           </Card>
         </Box>
 
-        <Box className="flex-[0.3] lg:flex-1 flex flex-col justify-center items-start p-4 lg:p-6">
+        <Box className="flex-1 flex flex-col justify-center items-start p-2 lg:p-4 lg:ml-16">
           <Heading
             as="h2"
-            size={{ base: "lg", lg: "2xl" }}
-            className="font-stint-ultra-expanded mb-4 lg:mb-6"
+            size={{ base: "md", lg: "3xl" }}
+            className="font-rufina mb-2 lg:mb-6"
             color="#BDE54C"
           >
-            DESPRE SERVICIUL NOSTRU
+            {heading}
           </Heading>
-          <Text className="font-pontano-sans text-sm lg:text-xl text-white">
+          <Text
+            className="font-oxygen text-white"
+            fontSize={{ base: "xs", lg: "xl" }}
+            lineHeight={{ base: "normal", lg: "tall" }}
+          >
             {description}
           </Text>
         </Box>
