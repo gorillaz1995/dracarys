@@ -32,19 +32,22 @@ interface PictProps {
 const Pict: React.FC<PictProps> = ({ title, subtitle, description }) => {
   return (
     <ChakraProvider theme={theme}>
-      <Box className="min-h-screen flex flex-col lg:flex-row" bg="#000000">
-        <Box className="flex-1 flex justify-center items-center p-6">
+      <Box
+        className="min-h-[90vh] md:min-h-screen flex flex-col lg:flex-row"
+        bg="#000000"
+      >
+        <Box className="flex-[0.6] lg:flex-1 flex justify-center items-center p-4 lg:p-6">
           <Card
             maxW={{ base: "sm", lg: "xl" }}
             w="100%"
-            h={{ base: "sm", lg: "xl" }}
+            h={{ base: "100%", lg: "xl" }}
             bgGradient="linear(to-br, brand.100, brand.200, brand.300)"
             borderRadius="0"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"
             alignItems="center"
-            p={6}
+            p={{ base: 4, lg: 6 }}
             position="relative"
             style={{
               transform: "perspective(1000px) rotateY(-15deg) rotateX(5deg)",
@@ -74,16 +77,20 @@ const Pict: React.FC<PictProps> = ({ title, subtitle, description }) => {
               alignItems="center"
               flex="1"
             >
-              <Stack textAlign="center" color="black" spacing={4}>
+              <Stack
+                textAlign="center"
+                color="black"
+                spacing={{ base: 3, lg: 4 }}
+              >
                 <Heading
-                  size={{ base: "lg", lg: "xl" }}
+                  size={{ base: "md", lg: "xl" }}
                   className="font-stint-ultra-expanded"
                 >
                   {title}
                 </Heading>
                 {subtitle && (
                   <Heading
-                    size={{ base: "md", lg: "lg" }}
+                    size={{ base: "sm", lg: "lg" }}
                     className="font-stint-ultra-expanded"
                   >
                     {subtitle}
@@ -95,11 +102,11 @@ const Pict: React.FC<PictProps> = ({ title, subtitle, description }) => {
               bg="#BDE54C"
               color="black"
               _hover={{ bg: "#BDE54C", opacity: 0.8 }}
-              className="font-stint-ultra-expanded mt-6 relative overflow-hidden"
+              className="font-stint-ultra-expanded mt-4 lg:mt-6 relative overflow-hidden"
               borderRadius="0"
-              fontSize={{ base: "md", lg: "lg" }}
-              px={{ base: 4, lg: 6 }}
-              py={{ base: 2, lg: 3 }}
+              fontSize={{ base: "sm", lg: "lg" }}
+              px={{ base: 3, lg: 6 }}
+              py={{ base: 1, lg: 3 }}
               sx={{
                 "&::before": {
                   content: '""',
@@ -123,16 +130,16 @@ const Pict: React.FC<PictProps> = ({ title, subtitle, description }) => {
           </Card>
         </Box>
 
-        <Box className="flex-1 flex flex-col justify-center items-start p-6">
+        <Box className="flex-[0.3] lg:flex-1 flex flex-col justify-center items-start p-4 lg:p-6">
           <Heading
             as="h2"
-            size={{ base: "xl", lg: "2xl" }}
-            className="font-stint-ultra-expanded mb-6"
+            size={{ base: "lg", lg: "2xl" }}
+            className="font-stint-ultra-expanded mb-4 lg:mb-6"
             color="#BDE54C"
           >
             DESPRE SERVICIUL NOSTRU
           </Heading>
-          <Text className="font-pontano-sans text-lg lg:text-xl text-white">
+          <Text className="font-pontano-sans text-sm lg:text-xl text-white">
             {description}
           </Text>
         </Box>

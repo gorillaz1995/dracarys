@@ -9,23 +9,23 @@ const services = [
   {
     title: "Branding",
     description:
-      "Creăm identități de brand puternice și memorabile care reflectă esența afacerii dumneavoastră. De la logo-uri și palette de culori până la ghiduri de brand complete, vă ajutăm să vă diferențiați și să creați o conexiune emoțională cu publicul țintă.",
+      "Redefine your future with our powerful branding solutions. We create memorable brand identities that break out of the box, delivering excellent results fast. Our experienced team uses cutting-edge technologies to help you stand out in any industry.",
   },
   {
     title: "Print",
     subtitle: "Indoor/Outdoor",
     description:
-      "Oferim soluții de printare de înaltă calitate pentru toate nevoile dumneavoastră, fie că este vorba de materiale pentru interior sau exterior. De la afișe și bannere până la materiale promoționale personalizate, asigurăm că mesajul dumneavoastră este transmis clar și impactant.",
+      "Experience creation without boundaries with our high-quality print solutions for both indoor and outdoor needs. Our state-of-the-art machines and expert team ensure rapid delivery of impactful materials that communicate your message clearly and effectively.",
   },
   {
     title: "Graphic Design",
     description:
-      "Echipa noastră de designeri talentați creează materiale vizuale captivante care comunică eficient mesajul dumneavoastră. De la broșuri și cataloage până la design-ul pentru social media, vă ajutăm să vă prezentați brandul într-un mod profesionist și atractiv.",
+      "Our talented designers push the boundaries of creativity to produce visually stunning materials. From brochures to social media designs, we help you present your brand professionally and attractively, always with an eye on redefining the future.",
   },
   {
     title: "X Print",
     description:
-      "X Print reprezintă serviciul nostru inovator de printare personalizată. Utilizăm tehnologii de ultimă generație pentru a crea produse unice, de la textile personalizate până la obiecte promoționale speciale. Transformăm ideile dumneavoastră în realitate, oferind soluții de printare creative și de înaltă calitate.",
+      "X Print is our innovative custom printing service that embodies the spirit of breaking out of the box. Using cutting-edge technologies and our highly trained team, we transform your ideas into unique, high-quality products, from personalized textiles to special promotional items.",
   },
 ];
 
@@ -33,6 +33,7 @@ const Srvs: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<SVGSVGElement>(null);
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
@@ -106,8 +107,24 @@ const Srvs: React.FC = () => {
 
     gsap.to(contentRef.current, {
       x: -scrollPosition,
-      duration: 0.5,
+      duration: 0.8,
       ease: "power2.out",
+    });
+
+    // Animate sections 2, 3, and 4
+    sectionRefs.current.forEach((sectionRef, index) => {
+      if (index > 0 && sectionRef) {
+        const sectionPosition = index * window.innerWidth;
+        const isVisible =
+          scrollPosition >= sectionPosition - window.innerWidth / 2;
+
+        gsap.to(sectionRef, {
+          x: isVisible ? 0 : window.innerWidth,
+          opacity: isVisible ? 1 : 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+      }
     });
   }, [scrollPosition]);
 
@@ -122,7 +139,13 @@ const Srvs: React.FC = () => {
   }, []);
 
   const handleBackToStart = () => {
-    setScrollPosition(0);
+    gsap.to(contentRef.current, {
+      x: 0,
+      duration: 1,
+      ease: "power2.inOut",
+      onComplete: () => setScrollPosition(0),
+    });
+
     if (arrowRef.current) {
       new Vivus(arrowRef.current as unknown as HTMLElement, {
         duration: 500,
@@ -150,31 +173,41 @@ const Srvs: React.FC = () => {
         style={{
           display: "flex",
           flexDirection: "row",
-          width: isMobile ? `${(services.length - 1) * 120 + 100}%` : "400%",
+          width: isMobile ? `${services.length * 100}%` : "400%",
           height: "100%",
+          transition: "transform 0.5s ease-out",
         }}
       >
         {services.map((service, index) => (
           <section
             key={index}
+            ref={(el: HTMLElement | null) => {
+              if (el) sectionRefs.current[index] = el;
+            }}
             className="section"
             style={{
-              width: isMobile ? (index === 0 ? "100%" : "120%") : "100%",
+              width: "100%",
               height: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "2rem",
               backgroundColor: "black",
-              marginLeft: isMobile && index === 0 ? "0" : "auto",
-              marginRight:
-                isMobile && index === services.length - 1 ? "auto" : "0",
+              paddingTop: "5vh",
+              paddingBottom: "5vh",
+              transition: "opacity 0.5s ease-in-out",
+              opacity: index === 0 ? 1 : 0,
+              transform: index === 0 ? "translateX(0)" : "translateX(100%)",
             }}
           >
             <div
               style={{
-                width: isMobile ? "80%" : "100%",
-                maxWidth: isMobile ? "500px" : "none",
+                width: isMobile ? "90%" : "130%",
+                maxWidth: isMobile ? "650px" : "none",
+                height: isMobile ? "130vh" : "117vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <Pict
@@ -195,6 +228,8 @@ const Srvs: React.FC = () => {
           background: "none",
           border: "none",
           cursor: "pointer",
+          transition: "opacity 0.3s ease-in-out",
+          opacity: scrollPosition > 0 ? 1 : 0,
         }}
       >
         <svg
