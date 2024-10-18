@@ -48,6 +48,10 @@ const AboutUs: React.FC = () => {
             (document.documentElement.scrollHeight - window.innerHeight)) *
           100;
         scrollIndicatorRef.current.style.width = `${scrollPercentage}%`;
+
+        // Add a pulsating effect
+        const pulseIntensity = Math.sin(Date.now() / 200) * 0.2 + 0.8; // Varies between 0.6 and 1
+        scrollIndicatorRef.current.style.opacity = pulseIntensity.toString();
       }
     };
 
@@ -90,6 +94,21 @@ const AboutUs: React.FC = () => {
       };
     }
   }, [inView]);
+
+  const AnimatedSection: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) => {
+    const [sectionRef, sectionInView] = useInView({
+      triggerOnce: true,
+      threshold: 0.1,
+    });
+
+    return (
+      <Box ref={sectionRef}>
+        <RoughNotationGroup show={sectionInView}>{children}</RoughNotationGroup>
+      </Box>
+    );
+  };
 
   return (
     <ChakraProvider theme={theme}>
@@ -147,7 +166,7 @@ const AboutUs: React.FC = () => {
               </svg>
             </Box>
 
-            <RoughNotationGroup show={inView}>
+            <AnimatedSection>
               <Flex
                 direction={{ base: "column", lg: "row" }}
                 align={{ base: "center", lg: "flex-start" }}
@@ -216,7 +235,9 @@ const AboutUs: React.FC = () => {
                   </Text>
                 </Box>
               </Flex>
+            </AnimatedSection>
 
+            <AnimatedSection>
               <Flex
                 direction={{ base: "column", lg: "row-reverse" }}
                 align={{ base: "center", lg: "flex-start" }}
@@ -284,7 +305,9 @@ const AboutUs: React.FC = () => {
                   </Text>
                 </Box>
               </Flex>
+            </AnimatedSection>
 
+            <AnimatedSection>
               <Box mb={{ base: 24, md: 36 }}>
                 <Heading
                   as="h2"
@@ -340,7 +363,9 @@ const AboutUs: React.FC = () => {
                   sacrificing excellence.
                 </Text>
               </Box>
+            </AnimatedSection>
 
+            <AnimatedSection>
               <Box>
                 <Heading
                   as="h2"
@@ -393,7 +418,7 @@ const AboutUs: React.FC = () => {
                   </RoughNotation>
                 </Text>
               </Box>
-            </RoughNotationGroup>
+            </AnimatedSection>
           </VStack>
         </Container>
         <Box
@@ -401,9 +426,15 @@ const AboutUs: React.FC = () => {
           position="fixed"
           bottom={0}
           left={0}
-          height="4px"
-          bg="brand.200"
+          height="10px"
+          bg="brand.100"
           zIndex={1000}
+          boxShadow="0 0 10px #BDE54A"
+          transition="all 0.3s ease-in-out"
+          _hover={{
+            height: "15px",
+            boxShadow: "0 0 15px #BDE54A",
+          }}
         />
       </Box>
     </ChakraProvider>
