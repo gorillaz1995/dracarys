@@ -51,14 +51,30 @@ const Pict: React.FC<PictProps> = ({
             overflow="hidden"
             position="relative"
           >
-            <Image
-              src={imageSrc}
-              alt={title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              style={{ objectFit: "cover", objectPosition: "center" }}
-              priority={imageSrc === "/images/c1.webp"}
-            />
+            <Box
+              position="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              overflow="hidden"
+              transform="skew(5deg)"
+              transformOrigin="center"
+            >
+              <Image
+                src={imageSrc}
+                alt={title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  transform: "skew(-5deg) scale(1.2)", // Compensate for the skew
+                  transformOrigin: "center",
+                }}
+                priority={imageSrc === "/images/c1.webp"}
+              />
+            </Box>
             <CardBody
               display="flex"
               flexDirection="column"
